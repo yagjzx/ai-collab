@@ -14,6 +14,7 @@ dependencies = [
 
 [project.scripts]
 ai-collab = "ai_collab.cli:main"
+ask-model = "ai_collab.ask_model:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -21,3 +22,9 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ai_collab"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"configs" = "share/ai-collab/configs"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

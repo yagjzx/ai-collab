@@ -1,0 +1,20 @@
+[workflow]
+name = "pair"
+description = "Two-model pair programming: designer + reviewer"
+
+[[workflow.roles]]
+role = "designer"
+agent = "claude"
+description = "Primary coder"
+is_primary = true
+
+[[workflow.roles]]
+role = "reviewer"
+agent = "codex"
+description = "Code reviewer"
+
+[workflow.review]
+enabled = true
+checkpoints = ["code"]
+pass_threshold = 7.0
+max_rounds = 2

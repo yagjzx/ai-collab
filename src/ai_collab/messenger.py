@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import json
 import logging
+import os
 import shlex
 import subprocess
 import uuid
@@ -147,6 +147,9 @@ class Messenger:
 
         logger.debug("SUBPROCESS exec: %s", " ".join(shlex.quote(c) for c in cmd))
 
+        # Inherit all env vars (API keys etc.) from the parent process
+        env = os.environ.copy()
+
         try:
             result = subprocess.run(
                 cmd,
@@ -154,6 +157,7 @@ class Messenger:
                 text=True,
                 timeout=agent_cfg.timeout,
                 cwd=str(self.project_dir),
+                env=env,
             )
         except subprocess.TimeoutExpired:
             raise MessengerError(
@@ -172,7 +176,13 @@ class Messenger:
                 result.stderr.strip(),
             )
 
-        return result.stdout.strip()
+        output = result.stdout.strip()
+        # Strip Gemini CLI YOLO mode warning lines
+        if agent_cfg.name == "gemini":
+            output = "\n".join(
+                l for l in output.splitlines() if "YOLO mode" not in l
+            ).strip()
+        return output
 
     def _send_tmux_keys(self, agent_cfg: AgentConfig, content: str) -> str:
         """Send text to the agent's tmux pane via send-keys."""
@@ -187,7 +197,7 @@ class Messenger:
         # Escape content for tmux send-keys (replace newlines with Enter keypresses)
         lines = content.split("\n")
         try:
-            for i, line in enumerate(lines):
+            for line in lines:
                 args = ["tmux", "send-keys", "-t", pane_target, line, "Enter"]
                 subprocess.run(
                     args,

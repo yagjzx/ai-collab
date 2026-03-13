@@ -104,8 +104,54 @@ def _default_workflow() -> WorkflowConfig:
     )
 
 
+def get_default_agent(name: str) -> AgentConfig:
+    """Return a sensible default AgentConfig for well-known agents."""
+    defaults = {
+        "claude": AgentConfig(
+            name="claude", display_name="Claude Code", binary="claude",
+            healthcheck="claude --version",
+        ),
+        "codex": AgentConfig(
+            name="codex", display_name="Codex CLI", binary="codex",
+            communication_mode="tmux-keys", output_capture="terminal",
+            healthcheck="codex --version",
+        ),
+        "gemini": AgentConfig(
+            name="gemini", display_name="Gemini CLI", binary="gemini",
+            launch_args=["--yolo", "-o", "text"],
+            communication_mode="subprocess", healthcheck="gemini --version",
+        ),
+    }
+    if name in defaults:
+        return defaults[name]
+    return AgentConfig(name=name, display_name=name, binary=name)
+
+
 def ensure_global_config():
-    """Create global config directory and default configs if they don't exist."""
+    """Create global config directory and install default configs if missing."""
     GLOBAL_CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     (GLOBAL_CONFIG_DIR / "agents").mkdir(exist_ok=True)
     (GLOBAL_CONFIG_DIR / "workflows").mkdir(exist_ok=True)
+
+    # Copy bundled default configs if the user has none
+    bundled = Path(__file__).parent.parent.parent / "configs"
+    if not bundled.exists():
+        # Installed via pip — configs are in the package data
+        import importlib.resources as pkg_resources
+        try:
+            bundled = Path(str(pkg_resources.files("ai_collab").joinpath("../..", "configs")))
+        except Exception:
+            return  # No bundled configs available
+
+    if not bundled.exists():
+        return
+
+    for subdir in ("agents", "workflows"):
+        src_dir = bundled / subdir
+        dst_dir = GLOBAL_CONFIG_DIR / subdir
+        if not src_dir.exists():
+            continue
+        for src_file in src_dir.glob("*.toml"):
+            dst_file = dst_dir / src_file.name
+            if not dst_file.exists():
+                dst_file.write_bytes(src_file.read_bytes())

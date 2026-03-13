@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .config import get_default_agent
 from .models import AgentConfig, AgentStatus, WorkflowConfig, SessionState, AgentState
 
 SESSION_PREFIX = "aic-"
@@ -44,7 +45,7 @@ class WorkspaceManager:
         for role in workflow.roles:
             agent_cfg = agents.get(role.agent)
             if agent_cfg is None:
-                agent_cfg = _default_agent(role.agent)
+                agent_cfg = get_default_agent(role.agent)
             role_agents.append((role, agent_cfg))
             if role.is_primary:
                 primary_role = role
@@ -93,7 +94,7 @@ class WorkspaceManager:
 
         # Primary agent gets pane 1
         if primary_role:
-            primary_agent = agents.get(primary_role.agent, _default_agent(primary_role.agent))
+            primary_agent = agents.get(primary_role.agent, get_default_agent(primary_role.agent))
             _setup_pane(session, pane_idx, primary_role, primary_agent, workdir)
             state.agents[primary_role.agent] = AgentState(
                 name=primary_role.agent,
@@ -233,32 +234,3 @@ def _setup_pane(session: str, pane_idx: int, role, agent_cfg: AgentConfig, workd
     subprocess.run(["tmux", "send-keys", "-t", pane, launch_cmd, "Enter"], check=True)
 
 
-def _default_agent(name: str) -> AgentConfig:
-    """Return a sensible default agent config for known agents."""
-    defaults = {
-        "claude": AgentConfig(
-            name="claude",
-            display_name="Claude Code",
-            binary="claude",
-            healthcheck="claude --version",
-        ),
-        "codex": AgentConfig(
-            name="codex",
-            display_name="Codex CLI",
-            binary="codex",
-            communication_mode="tmux-keys",
-            output_capture="terminal",
-            healthcheck="codex --version",
-        ),
-        "gemini": AgentConfig(
-            name="gemini",
-            display_name="Gemini CLI",
-            binary="gemini",
-            launch_args=[],
-            communication_mode="subprocess",
-            healthcheck="gemini --version",
-        ),
-    }
-    if name in defaults:
-        return defaults[name]
-    return AgentConfig(name=name, display_name=name, binary=name)

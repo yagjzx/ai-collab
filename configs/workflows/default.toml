@@ -1,0 +1,26 @@
+[workflow]
+name = "default"
+description = "Standard 3-model collaboration: designer + reviewer + inspiration"
+
+[[workflow.roles]]
+role = "designer"
+agent = "claude"
+description = "Primary planner, architect, and executor"
+is_primary = true
+
+[[workflow.roles]]
+role = "reviewer"
+agent = "codex"
+description = "Code review and quality gate"
+
+[[workflow.roles]]
+role = "inspiration"
+agent = "gemini"
+description = "Creative brainstorming (reference only, verify before use)"
+trust_level = "low"
+
+[workflow.review]
+enabled = true
+checkpoints = ["plan", "code"]
+pass_threshold = 7.0
+max_rounds = 3

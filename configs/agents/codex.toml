@@ -1,0 +1,9 @@
+[agent]
+name = "codex"
+display_name = "Codex CLI"
+binary = "codex"
+launch_args = []
+healthcheck = "codex --version"
+communication_mode = "tmux-keys"
+output_capture = "terminal"
+timeout = 120

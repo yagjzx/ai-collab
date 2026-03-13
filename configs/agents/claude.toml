@@ -1,0 +1,8 @@
+[agent]
+name = "claude"
+display_name = "Claude Code"
+binary = "claude"
+launch_args = []
+healthcheck = "claude --version"
+communication_mode = "subprocess"
+timeout = 120

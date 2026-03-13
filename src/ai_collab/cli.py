@@ -11,6 +11,7 @@ from rich.table import Table
 from . import __version__
 from .config import load_agent_configs, load_workflow_config, ensure_global_config
 from .workspace import WorkspaceManager
+from .messenger import Messenger
 
 console = Console()
 
@@ -117,7 +118,7 @@ def status(project_name: str | None):
             console.print("[dim]No active workspaces.[/]")
             return
         for s in sessions:
-            _print_status(mgr, s["name"])
+            _print_status(mgr, s["project"])
         return
 
     if not mgr.session_exists(project_name):
@@ -146,3 +147,63 @@ def init(project_dir: str):
     (config_dir / "sessions").mkdir(exist_ok=True)
 
     console.print(f"[green]Initialized .ai-collab/ in {project_path.name}[/]")
+
+
+@main.command()
+@click.argument("agent_name")
+@click.argument("prompt", nargs=-1, required=True)
+@click.option("--project", "-p", default=".", type=click.Path(exists=True, file_okay=False),
+              help="Project directory (for context and log isolation)")
+def send(agent_name: str, prompt: tuple[str, ...], project: str):
+    """Send a message to an agent (replaces ask-model).
+
+    Examples:
+
+        ai-collab send gemini "Review this code"
+
+        echo "diff" | ai-collab send codex "Review this diff"
+
+        ai-collab send gemini "Check CLAUDE.md" -p ~/workspace/clawforce
+    """
+    import sys as _sys
+
+    ensure_global_config()
+    project_path = Path(project).resolve()
+    agents = load_agent_configs(project_path)
+
+    full_prompt = " ".join(prompt)
+
+    # Read stdin if piped
+    if not _sys.stdin.isatty():
+        stdin_text = _sys.stdin.read()
+        if stdin_text.strip():
+            full_prompt = f"{full_prompt}\n\n---\n{stdin_text}\n---"
+
+    # Find the active session for this project (for tmux-keys routing)
+    mgr = WorkspaceManager()
+    project_name = project_path.name
+    tmux_session = mgr.session_name(project_name) if mgr.session_exists(project_name) else None
+
+    messenger = Messenger(
+        project_dir=project_path,
+        session_id=f"cli_{project_name}",
+        agents=agents,
+        tmux_session=tmux_session,
+    )
+
+    console.print(f"[dim]Sending to {agent_name}...[/]")
+    response = messenger.send(
+        from_agent="user",
+        to_agent=agent_name,
+        content=full_prompt,
+        message_type="query",
+    )
+
+    # Print the response
+    content = response.payload.get("content", "")
+    if content.startswith("[ERROR]"):
+        console.print(f"[red]{content}[/]")
+    elif content.startswith("[SENT via tmux"):
+        console.print(f"[yellow]{content}[/]")
+    else:
+        console.print(content)
