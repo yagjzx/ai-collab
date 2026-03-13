@@ -508,3 +508,25 @@ Gemini 返回创意建议，
 Claude 评估后展示给我选择，
 我选定方案后 Claude 执行实现。
 ```
+
+---
+
+## 附录 B: 市场调研参考来源
+
+- [Agentic Coding 2026: AI Agent Teams Guide](https://halallens.no/en/blog/agentic-coding-in-2026-the-complete-guide-to-plugins-multi-model-orchestration-and-ai-agent-teams)
+- [The 2026 Guide to Coding CLI Tools: 15 AI Agents Compared (Tembo)](https://www.tembo.io/blog/coding-cli-tools-comparison)
+- [Parallel Code - GitHub](https://github.com/johannesjo/parallel-code)
+- [CCManager - GitHub](https://github.com/kbwo/ccmanager)
+- [ccswarm - GitHub](https://github.com/nwiizo/ccswarm)
+- [Overstory - GitHub](https://github.com/jayminwest/overstory)
+- [Claude Code Router - GitHub](https://github.com/musistudio/claude-code-router)
+- [Unrolling the Codex Agent Loop (OpenAI)](https://openai.com/index/unrolling-the-codex-agent-loop/)
+- [VS Code: Your Home for Multi-Agent Development](https://code.visualstudio.com/blogs/2026/02/05/multi-agent-development)
+- [GitHub: Pick Your Agent - Claude and Codex on Agent HQ](https://github.blog/news-insights/company-news/pick-your-agent-use-claude-and-codex-on-agent-hq/)
+- [Warp: The Agentic Development Environment](https://www.warp.dev/)
+- [Kilo Code Orchestrator Mode](https://kilo.ai/docs/code-with-ai/agents/orchestrator-mode)
+- [OpenHands - GitHub](https://github.com/OpenHands/OpenHands)
+- [Aider - AI Pair Programming](https://aider.chat/)
+- [Git Worktrees for Parallel AI Coding Agents (Upsun)](https://devcenter.upsun.com/posts/git-worktrees-for-parallel-ai-coding-agents/)
+- [Claude Code Swarms: Multi-Agent AI Coding](https://zenvanriel.com/ai-engineer-blog/claude-code-swarms-multi-agent-orchestration/)
+- [Microsoft Multi-Agent Reference Architecture](https://microsoft.github.io/multi-agent-reference-architecture/docs/context-engineering/Agents-Orchestration.html)
