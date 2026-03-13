@@ -97,9 +97,9 @@ def _default_workflow() -> WorkflowConfig:
         name="default",
         description="Standard three-model collaboration",
         roles=[
-            RoleAssignment(role="designer", agent="claude", description="Primary architect", is_primary=True),
-            RoleAssignment(role="reviewer", agent="codex", description="Code reviewer"),
-            RoleAssignment(role="inspiration", agent="gemini", description="Creative ideas", trust_level="low"),
+            RoleAssignment(role="commander", agent="claude", description="Planner, architect, coordinator", is_primary=True),
+            RoleAssignment(role="executor", agent="codex", description="Code writer, implements tasks"),
+            RoleAssignment(role="verifier", agent="gemini", description="Independent verifier, runs commands to verify", trust_level="verify_only"),
         ],
     )
 

@@ -1,23 +1,23 @@
 [workflow]
 name = "default"
-description = "Standard 3-model collaboration: designer + reviewer + inspiration"
+description = "Standard 3-model collaboration: commander + executor + verifier"
 
 [[workflow.roles]]
-role = "designer"
+role = "commander"
 agent = "claude"
-description = "Primary planner, architect, and executor"
+description = "Primary planner, architect, coordinator. Creates tasks, makes final decisions."
 is_primary = true
 
 [[workflow.roles]]
-role = "reviewer"
+role = "executor"
 agent = "codex"
-description = "Code review and quality gate"
+description = "Code writer. Reads TASK.md, implements changes, reports results."
 
 [[workflow.roles]]
-role = "inspiration"
+role = "verifier"
 agent = "gemini"
-description = "Creative brainstorming (reference only, verify before use)"
-trust_level = "low"
+description = "Independent verifier. Runs commands to verify acceptance criteria. Does NOT trust executor summaries."
+trust_level = "verify_only"
 
 [workflow.review]
 enabled = true

@@ -8,7 +8,7 @@ from ai_collab.config import load_workflow_config, _default_workflow
 def test_default_workflow_has_three_roles():
     wf = _default_workflow()
     assert len(wf.roles) == 3
-    assert wf.roles[0].role == "designer"
+    assert wf.roles[0].role == "commander"
     assert wf.roles[0].is_primary is True
 
 
