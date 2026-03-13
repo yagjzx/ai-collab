@@ -2,8 +2,8 @@
 name = "codex"
 display_name = "Codex CLI"
 binary = "codex"
-launch_args = []
+launch_args = ["exec", "--full-auto"]
+prompt_flag = ""
 healthcheck = "codex --version"
-communication_mode = "tmux-keys"
-output_capture = "terminal"
+communication_mode = "subprocess"
 timeout = 120

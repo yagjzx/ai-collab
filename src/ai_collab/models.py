@@ -24,6 +24,7 @@ class AgentConfig(BaseModel):
     launch_args: list[str] = Field(default_factory=list)
     healthcheck: str = ""
     communication_mode: CommunicationMode = CommunicationMode.SUBPROCESS
+    prompt_flag: str = "-p"  # CLI flag before the prompt content ("" = positional arg)
     input_format: str = "text"
     output_capture: str = "stdout"
     timeout: int = 120

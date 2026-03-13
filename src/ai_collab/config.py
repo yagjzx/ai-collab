@@ -113,8 +113,8 @@ def get_default_agent(name: str) -> AgentConfig:
         ),
         "codex": AgentConfig(
             name="codex", display_name="Codex CLI", binary="codex",
-            communication_mode="tmux-keys", output_capture="terminal",
-            healthcheck="codex --version",
+            launch_args=["exec", "--full-auto"], prompt_flag="",
+            communication_mode="subprocess", healthcheck="codex --version",
         ),
         "gemini": AgentConfig(
             name="gemini", display_name="Gemini CLI", binary="gemini",
