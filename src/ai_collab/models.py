@@ -21,14 +21,12 @@ class AgentConfig(BaseModel):
     name: str
     display_name: str
     binary: str
-    launch_args: list[str] = Field(default_factory=list)
+    interactive_args: list[str] = Field(default_factory=list)  # args for tmux pane (interactive)
+    send_args: list[str] = Field(default_factory=list)  # args for subprocess (headless)
+    prompt_flag: str = "-p"  # CLI flag before prompt in send mode ("" = positional)
     healthcheck: str = ""
     communication_mode: CommunicationMode = CommunicationMode.SUBPROCESS
-    prompt_flag: str = "-p"  # CLI flag before the prompt content ("" = positional arg)
-    input_format: str = "text"
-    output_capture: str = "stdout"
     timeout: int = 120
-    auto_restart: bool = False
 
 
 class RoleAssignment(BaseModel):

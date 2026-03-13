@@ -5,7 +5,8 @@ from ai_collab.models import AgentConfig, Message, WorkflowConfig, RoleAssignmen
 
 def test_agent_config_defaults():
     agent = AgentConfig(name="test", display_name="Test", binary="test-bin")
-    assert agent.launch_args == []
+    assert agent.interactive_args == []
+    assert agent.send_args == []
     assert agent.communication_mode == CommunicationMode.SUBPROCESS
     assert agent.timeout == 120
 

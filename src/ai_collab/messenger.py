@@ -141,7 +141,7 @@ class Messenger:
 
     def _send_subprocess(self, agent_cfg: AgentConfig, content: str) -> str:
         """Run the agent binary as a subprocess, pass content via args, capture stdout."""
-        cmd = [agent_cfg.binary] + list(agent_cfg.launch_args)
+        cmd = [agent_cfg.binary] + list(agent_cfg.send_args)
         # Append the prompt content using the agent's prompt flag
         if agent_cfg.prompt_flag:
             cmd.extend([agent_cfg.prompt_flag, content])

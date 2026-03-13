@@ -24,7 +24,7 @@ def messenger(tmp_project):
             name="gemini",
             display_name="Gemini CLI",
             binary="gemini",
-            launch_args=["--yolo", "-o", "text"],
+            send_args=["--yolo", "-o", "text"],
             communication_mode=CommunicationMode.SUBPROCESS,
             timeout=30,
         ),

@@ -2,7 +2,9 @@
 name = "gemini"
 display_name = "Gemini CLI"
 binary = "gemini"
-launch_args = ["--yolo", "-o", "text"]
+interactive_args = []
+send_args = ["--yolo", "-o", "text"]
+prompt_flag = "-p"
 healthcheck = "gemini --version"
 communication_mode = "subprocess"
 timeout = 120

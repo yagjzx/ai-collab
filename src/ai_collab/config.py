@@ -109,17 +109,17 @@ def get_default_agent(name: str) -> AgentConfig:
     defaults = {
         "claude": AgentConfig(
             name="claude", display_name="Claude Code", binary="claude",
-            healthcheck="claude --version",
+            send_args=[], prompt_flag="-p", healthcheck="claude --version",
         ),
         "codex": AgentConfig(
             name="codex", display_name="Codex CLI", binary="codex",
-            launch_args=["exec", "--full-auto"], prompt_flag="",
-            communication_mode="subprocess", healthcheck="codex --version",
+            send_args=["exec", "--full-auto"], prompt_flag="",
+            healthcheck="codex --version",
         ),
         "gemini": AgentConfig(
             name="gemini", display_name="Gemini CLI", binary="gemini",
-            launch_args=["--yolo", "-o", "text"],
-            communication_mode="subprocess", healthcheck="gemini --version",
+            send_args=["--yolo", "-o", "text"], prompt_flag="-p",
+            healthcheck="gemini --version",
         ),
     }
     if name in defaults:

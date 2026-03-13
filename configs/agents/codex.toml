@@ -2,7 +2,8 @@
 name = "codex"
 display_name = "Codex CLI"
 binary = "codex"
-launch_args = ["exec", "--full-auto"]
+interactive_args = []
+send_args = ["exec", "--full-auto"]
 prompt_flag = ""
 healthcheck = "codex --version"
 communication_mode = "subprocess"

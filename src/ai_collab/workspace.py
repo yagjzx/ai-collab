@@ -226,10 +226,10 @@ def _setup_pane(session: str, pane_idx: int, role, agent_cfg: AgentConfig, workd
     title = f"{agent_cfg.display_name} ({role.role})"
     subprocess.run(["tmux", "select-pane", "-t", pane, "-T", title], check=True)
 
-    # Build launch command
+    # Build launch command (interactive mode — no prompt, user types into pane)
     launch_cmd = f"cd {workdir} && {agent_cfg.binary}"
-    if agent_cfg.launch_args:
-        launch_cmd += " " + " ".join(agent_cfg.launch_args)
+    if agent_cfg.interactive_args:
+        launch_cmd += " " + " ".join(agent_cfg.interactive_args)
 
     subprocess.run(["tmux", "send-keys", "-t", pane, launch_cmd, "Enter"], check=True)
 
