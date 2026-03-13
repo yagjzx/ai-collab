@@ -12,6 +12,7 @@ from . import __version__
 from .config import load_agent_configs, load_workflow_config, ensure_global_config
 from .workspace import WorkspaceManager
 from .messenger import Messenger
+from . import task_manager
 
 console = Console()
 
@@ -207,3 +208,95 @@ def send(agent_name: str, prompt: tuple[str, ...], project: str):
         console.print(f"[yellow]{content}[/]")
     else:
         console.print(content)
+
+
+# ── Task subcommand group ──────────────────────────────────────────
+
+@main.group()
+def task():
+    """Manage structured tasks (create → dispatch → verify)."""
+    pass
+
+
+@task.command("create")
+@click.argument("title")
+@click.option("--goal", "-g", default="", help="One-sentence goal")
+@click.option("--project", "-p", default=".", type=click.Path(exists=True, file_okay=False))
+def task_create(title: str, goal: str, project: str):
+    """Create a new task from templates."""
+    project_path = Path(project).resolve()
+    status = task_manager.create_task(project_path, title, goal)
+    task_id = status["task_id"]
+    task_dir = project_path / ".ai-collab" / "tasks" / task_id
+
+    console.print(f"[bold green]Created {task_id}:[/] {title}")
+    console.print(f"  [dim]TASK.md:[/]   {task_dir / 'TASK.md'}")
+    console.print(f"  [dim]VERIFY.md:[/] {task_dir / 'VERIFY.md'}")
+    console.print(f"\n[yellow]Edit TASK.md to fill in details, then run:[/]")
+    console.print(f"  ai-collab task dispatch {task_id}")
+
+
+@task.command("dispatch")
+@click.argument("task_id")
+@click.option("--executor", "-e", default="codex", help="Agent to execute")
+@click.option("--project", "-p", default=".", type=click.Path(exists=True, file_okay=False))
+def task_dispatch(task_id: str, executor: str, project: str):
+    """Dispatch a task to the executor agent."""
+    project_path = Path(project).resolve()
+    console.print(f"[dim]Dispatching {task_id} to {executor}...[/]")
+    result = task_manager.dispatch_task(project_path, task_id, executor)
+
+    if result.startswith("[ERROR]"):
+        console.print(f"[red]{result}[/]")
+    else:
+        console.print(f"[green]Executor response:[/]")
+        console.print(result)
+        console.print(f"\n[yellow]When ready, verify with:[/]")
+        console.print(f"  ai-collab task verify {task_id}")
+
+
+@task.command("verify")
+@click.argument("task_id")
+@click.option("--verifier", "-v", default="gemini", help="Agent to verify")
+@click.option("--project", "-p", default=".", type=click.Path(exists=True, file_okay=False))
+def task_verify(task_id: str, verifier: str, project: str):
+    """Send a task to the verifier for independent verification."""
+    project_path = Path(project).resolve()
+    console.print(f"[dim]Sending {task_id} to {verifier} for verification...[/]")
+    result = task_manager.verify_task(project_path, task_id, verifier)
+
+    if result.startswith("[ERROR]"):
+        console.print(f"[red]{result}[/]")
+    else:
+        console.print(f"[green]Verifier response:[/]")
+        console.print(result)
+
+
+@task.command("ls")
+@click.option("--project", "-p", default=".", type=click.Path(exists=True, file_okay=False))
+def task_ls(project: str):
+    """List all tasks for a project."""
+    project_path = Path(project).resolve()
+    tasks = task_manager.list_tasks(project_path)
+
+    if not tasks:
+        console.print("[dim]No tasks found.[/]")
+        return
+
+    table = Table(title=f"Tasks: {project_path.name}")
+    table.add_column("ID", style="cyan")
+    table.add_column("Title", style="white")
+    table.add_column("Status", style="yellow")
+    table.add_column("Result", style="green")
+    table.add_column("Created", style="dim")
+
+    for t in tasks:
+        table.add_row(
+            t.get("task_id", "?"),
+            t.get("title", "?"),
+            t.get("status", "?"),
+            t.get("result", ""),
+            t.get("created", "?"),
+        )
+
+    console.print(table)
